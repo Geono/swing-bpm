@@ -6,6 +6,8 @@ Automatic BPM detection optimized for **swing & jazz music**.
 
 Standard BPM detectors often misidentify fast swing tempos (180+ BPM) as half-tempo. `swing-bpm` solves this with a hybrid detection algorithm that combines onset analysis with Predominant Local Pulse (PLP), achieving **100% accuracy** on an 80-song test set spanning 80–304 BPM.
 
+![Before and After](before-after.png)
+
 ## Install
 
 ### macOS
@@ -214,6 +216,8 @@ MIT
 스윙 & 재즈 음악에 최적화된 **자동 BPM 측정 도구**입니다.
 
 일반적인 BPM 측정기는 빠른 스윙 템포(180+ BPM)를 절반 속도로 잘못 인식하는 경우가 많습니다. `swing-bpm`은 onset 분석과 PLP(Predominant Local Pulse)를 결합한 하이브리드 알고리즘으로 이 문제를 해결하며, 80~304 BPM 범위의 80곡 테스트에서 **100% 정확도**를 달성했습니다.
+
+![Before and After](before-after-kr.png)
 
 ## 설치
 
