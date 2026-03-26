@@ -1,5 +1,7 @@
 # swing-bpm
 
+[![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-support-yellow?style=flat&logo=buy-me-a-coffee)](https://buymeacoffee.com/kunokim)
+
 Automatic BPM detection optimized for **swing & jazz music**.
 
 Standard BPM detectors often misidentify fast swing tempos (180+ BPM) as half-tempo. `swing-bpm` solves this with a hybrid detection algorithm that combines onset analysis with Predominant Local Pulse (PLP), achieving **100% accuracy** on an 80-song test set spanning 80–304 BPM.
@@ -176,6 +178,12 @@ from swing_bpm import detect_bpm
 bpm = detect_bpm("Tea For Two.mp3")
 print(bpm)  # 174
 ```
+
+## Support
+
+If this tool saved you time, consider buying me a coffee!
+
+[![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-support-yellow?style=flat&logo=buy-me-a-coffee&logoColor=white)](https://buymeacoffee.com/kunokim)
 
 ## License
 
@@ -361,3 +369,9 @@ from swing_bpm import detect_bpm
 bpm = detect_bpm("Tea For Two.mp3")
 print(bpm)  # 174
 ```
+
+## 후원
+
+이 도구가 도움이 되셨다면 커피 한 잔 사주세요!
+
+[![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-후원하기-yellow?style=flat&logo=buy-me-a-coffee&logoColor=white)](https://buymeacoffee.com/kunokim)
