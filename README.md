@@ -6,16 +6,43 @@ Standard BPM detectors often misidentify fast swing tempos (180+ BPM) as half-te
 
 ## Install
 
-```bash
-pip install swing-bpm
-```
+### macOS
+
+1. Install Python 3.9+ (if not already installed):
+   ```bash
+   brew install python
+   ```
+
+2. Download and install swing-bpm:
+   ```bash
+   git clone https://github.com/Geono/swing-bpm.git
+   cd swing-bpm
+   pip3 install .
+   ```
+
+### Windows
+
+1. Install Python 3.9+ from [python.org](https://www.python.org/downloads/). **Check "Add Python to PATH"** during installation.
+
+2. Open **Command Prompt** or **PowerShell**, then:
+   ```
+   git clone https://github.com/Geono/swing-bpm.git
+   cd swing-bpm
+   pip install .
+   ```
+
+   If you don't have Git, you can [download the ZIP](https://github.com/Geono/swing-bpm/archive/refs/heads/main.zip) instead, extract it, and run `pip install .` inside the folder.
 
 ## Usage
 
 Tag all music files in a folder:
 
 ```bash
+# macOS
 swing-bpm ~/Music/swing/
+
+# Windows
+swing-bpm "C:\Users\YourName\Music\swing"
 ```
 
 This will:
@@ -26,11 +53,11 @@ This will:
 ### Options
 
 ```bash
-swing-bpm ~/Music/swing/ --dry-run       # Preview without changes
-swing-bpm ~/Music/swing/ --no-rename     # Metadata only, don't rename
-swing-bpm ~/Music/swing/ --no-metadata   # Rename only, don't write metadata
-swing-bpm ~/Music/swing/ --overwrite     # Re-detect already tagged files
-swing-bpm track1.mp3 track2.flac         # Process specific files
+swing-bpm ./music/ --dry-run       # Preview without changes
+swing-bpm ./music/ --no-rename     # Metadata only, don't rename
+swing-bpm ./music/ --no-metadata   # Rename only, don't write metadata
+swing-bpm ./music/ --overwrite     # Re-detect already tagged files
+swing-bpm track1.mp3 track2.flac   # Process specific files
 ```
 
 ### Supported formats
@@ -162,16 +189,43 @@ MIT
 
 ## 설치
 
-```bash
-pip install swing-bpm
-```
+### macOS
+
+1. Python 3.9 이상 설치 (이미 있다면 생략):
+   ```bash
+   brew install python
+   ```
+
+2. swing-bpm 다운로드 및 설치:
+   ```bash
+   git clone https://github.com/Geono/swing-bpm.git
+   cd swing-bpm
+   pip3 install .
+   ```
+
+### Windows
+
+1. [python.org](https://www.python.org/downloads/)에서 Python 3.9 이상을 설치합니다. 설치 시 **"Add Python to PATH"를 반드시 체크**하세요.
+
+2. **명령 프롬프트** 또는 **PowerShell**을 열고 아래를 입력합니다:
+   ```
+   git clone https://github.com/Geono/swing-bpm.git
+   cd swing-bpm
+   pip install .
+   ```
+
+   Git이 없다면 [ZIP 파일을 다운로드](https://github.com/Geono/swing-bpm/archive/refs/heads/main.zip)한 뒤 압축을 풀고, 해당 폴더에서 `pip install .`을 실행하면 됩니다.
 
 ## 사용법
 
 폴더 내 모든 음악 파일에 BPM 태그 달기:
 
 ```bash
+# macOS
 swing-bpm ~/Music/swing/
+
+# Windows
+swing-bpm "C:\Users\사용자이름\Music\swing"
 ```
 
 실행하면 각 파일에 대해:
@@ -182,11 +236,11 @@ swing-bpm ~/Music/swing/
 ### 옵션
 
 ```bash
-swing-bpm ~/Music/swing/ --dry-run       # 변경 없이 미리보기만
-swing-bpm ~/Music/swing/ --no-rename     # 메타데이터만 기록 (파일명 변경 안 함)
-swing-bpm ~/Music/swing/ --no-metadata   # 파일명만 변경 (메타데이터 기록 안 함)
-swing-bpm ~/Music/swing/ --overwrite     # 이미 태그된 파일도 다시 측정
-swing-bpm track1.mp3 track2.flac         # 특정 파일만 처리
+swing-bpm ./music/ --dry-run       # 변경 없이 미리보기만
+swing-bpm ./music/ --no-rename     # 메타데이터만 기록 (파일명 변경 안 함)
+swing-bpm ./music/ --no-metadata   # 파일명만 변경 (메타데이터 기록 안 함)
+swing-bpm ./music/ --overwrite     # 이미 태그된 파일도 다시 측정
+swing-bpm track1.mp3 track2.flac   # 특정 파일만 처리
 ```
 
 ### 지원 포맷
