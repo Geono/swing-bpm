@@ -24,7 +24,9 @@ Standard BPM detectors often misidentify fast swing tempos (180+ BPM) as half-te
 
 1. Install Python 3.9+ from [python.org](https://www.python.org/downloads/). **Check "Add Python to PATH"** during installation.
 
-2. Open **Command Prompt** or **PowerShell**, then:
+2. Install [Git for Windows](https://git-scm.com/downloads/win) if you don't have it.
+
+3. Open **Command Prompt** or **PowerShell**, then:
    ```
    git clone https://github.com/Geono/swing-bpm.git
    cd swing-bpm
@@ -207,7 +209,9 @@ MIT
 
 1. [python.org](https://www.python.org/downloads/)에서 Python 3.9 이상을 설치합니다. 설치 시 **"Add Python to PATH"를 반드시 체크**하세요.
 
-2. **명령 프롬프트** 또는 **PowerShell**을 열고 아래를 입력합니다:
+2. Git이 없다면 [Git for Windows](https://git-scm.com/downloads/win)를 설치합니다.
+
+3. **명령 프롬프트** 또는 **PowerShell**을 열고 아래를 입력합니다:
    ```
    git clone https://github.com/Geono/swing-bpm.git
    cd swing-bpm
