@@ -188,15 +188,6 @@ Tested on 80 swing/jazz tracks with human-verified BPM labels (80–304 BPM). Al
 
 </details>
 
-## As a library
-
-```python
-from swing_bpm import detect_bpm
-
-bpm = detect_bpm("Tea For Two.mp3")
-print(bpm)  # 174
-```
-
 ## Support
 
 If this tool saved you time, consider buying me a coffee!
@@ -396,15 +387,6 @@ swing-bpm track1.mp3 track2.flac   # 특정 파일만 처리
 | 304 | 304 | +0 | Eyal Vilner | Hellzapoppin' |
 
 </details>
-
-## 라이브러리로 사용
-
-```python
-from swing_bpm import detect_bpm
-
-bpm = detect_bpm("Tea For Two.mp3")
-print(bpm)  # 174
-```
 
 ## 후원
 
