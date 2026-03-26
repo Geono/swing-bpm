@@ -72,11 +72,29 @@ swing-bpm track1.mp3 track2.flac   # Process specific files
 
 ## How it works
 
-1. **Base detection** — `librosa.beat.beat_track()` finds initial tempo
-2. **Half-tempo check** — Measures onset strength at midpoints between detected beats. A high mid/on-beat ratio (>0.30) suggests the true tempo is double
-3. **PLP tiebreaker** — For borderline cases (ratio 0.27–0.33), Predominant Local Pulse analysis decides whether to double
+### The problem
 
-This approach is specifically tuned for swing jazz, where the rhythmic structure often confuses general-purpose BPM detectors.
+Most BPM detectors work by finding repeated rhythmic patterns in audio. In swing jazz, beats 1 and 3 of each bar carry heavy accents from the rhythm section, while beats 2 and 4 are lighter. At fast tempos (180+ BPM), detectors often lock onto those strong accents on 1 and 3, which repeat at half the actual tempo — so a 200 BPM song gets detected as 100 BPM.
+
+### The solution: a 3-stage hybrid approach
+
+**Stage 1: Base detection**
+
+We use `librosa.beat.beat_track()` to find an initial tempo estimate. This works well for slow-to-mid tempos but frequently returns half-tempo for fast songs.
+
+**Stage 2: Onset ratio analysis**
+
+**Onset** = a sudden burst of energy in the audio, like a drum hit, a horn accent, or a piano chord attack. We measure onset strength at each detected beat and compare it to the onset strength at the *midpoints* between beats.
+
+If the true tempo is double what was detected, those midpoints are actually real beats — so they'll have strong onsets too. We calculate the ratio: `midpoint onset strength / on-beat onset strength`.
+
+- **Ratio < 0.27** → midpoints are quiet, detected tempo is correct
+- **Ratio > 0.33** → midpoints have strong hits, true tempo is 2x
+- **Ratio 0.27–0.33** → ambiguous, need a tiebreaker
+
+**Stage 3: PLP tiebreaker**
+
+For borderline cases, we use **PLP (Predominant Local Pulse)** — an algorithm that tracks how the perceived "pulse" of the music evolves over time, frame by frame. Unlike beat tracking which commits to a single global tempo, PLP independently estimates the local pulse at each moment, then we take the median. This gives a second opinion that reliably resolves the ambiguous cases where onset ratio alone can't decide.
 
 ## Test results
 
@@ -263,11 +281,29 @@ swing-bpm track1.mp3 track2.flac   # 특정 파일만 처리
 
 ## 작동 원리
 
-1. **기본 측정** — `librosa.beat.beat_track()`으로 초기 템포 감지
-2. **반박자 보정** — 감지된 비트 사이 중간 지점의 onset 강도를 측정합니다. 중간/비트 비율이 높으면(>0.30) 실제 템포가 2배라는 의미입니다
-3. **PLP 판정** — 경계 구간(비율 0.27~0.33)에서는 PLP 분석으로 최종 판정합니다
+### 문제점
 
-이 방식은 일반 BPM 측정기가 혼동하기 쉬운 스윙 재즈의 리듬 구조에 맞게 특별히 조정되었습니다.
+대부분의 BPM 측정기는 오디오에서 반복되는 리듬 패턴을 찾아 템포를 계산합니다. 스윙 재즈에서는 각 마디의 1박과 3박에 리듬 섹션의 강한 액센트가 실리고, 2박과 4박은 상대적으로 가볍습니다. 빠른 템포(180+ BPM)에서는 측정기가 1박과 3박의 강한 액센트에만 고정되어 실제 템포의 절반을 감지하게 됩니다 — 200 BPM 곡이 100 BPM으로 잡히는 식입니다.
+
+### 해결: 3단계 하이브리드 방식
+
+**1단계: 기본 측정**
+
+`librosa.beat.beat_track()`으로 초기 템포를 추정합니다. 느린~중간 템포에서는 잘 작동하지만, 빠른 곡에서는 절반 템포를 반환하는 경우가 빈번합니다.
+
+**2단계: Onset 비율 분석**
+
+**Onset** = 드럼 타격, 호른 액센트, 피아노 코드 어택 등 오디오에서 에너지가 갑자기 터지는 순간입니다. 감지된 각 비트 위치의 onset 강도와, 비트 *사이 중간 지점*의 onset 강도를 비교합니다.
+
+만약 실제 템포가 감지된 것의 2배라면, 그 중간 지점은 사실 진짜 비트이므로 강한 onset이 있을 것입니다. 이 비율을 계산합니다: `중간 지점 onset 강도 / 비트 위 onset 강도`.
+
+- **비율 < 0.27** → 중간 지점이 조용함, 감지된 템포가 맞음
+- **비율 > 0.33** → 중간 지점에도 강한 타격, 실제 템포는 2배
+- **비율 0.27~0.33** → 애매한 경우, 추가 판정 필요
+
+**3단계: PLP 판정**
+
+경계 구간에서는 **PLP(Predominant Local Pulse, 우세 국소 펄스)** 알고리즘을 사용합니다. 비트 트래킹이 하나의 글로벌 템포에 고정하는 것과 달리, PLP는 매 순간의 체감 "맥박"을 프레임 단위로 독립 추정한 뒤 중앙값을 취합니다. 이를 통해 onset 비율만으로는 판단이 어려운 애매한 곡들을 정확하게 판정할 수 있습니다.
 
 ## 테스트 결과
 
