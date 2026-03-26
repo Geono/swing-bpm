@@ -1,0 +1,35 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "swing-bpm"
+version = "0.1.0"
+description = "Automatic BPM detection optimized for swing & jazz music"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.9"
+authors = [
+    { name = "Geono" },
+]
+keywords = ["bpm", "swing", "jazz", "lindy-hop", "music", "tempo", "dj"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Topic :: Multimedia :: Sound/Audio :: Analysis",
+]
+dependencies = [
+    "librosa>=0.10",
+    "mutagen>=1.47",
+    "numpy",
+]
+
+[project.scripts]
+swing-bpm = "swing_bpm.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/Geono/swing-bpm"
+Repository = "https://github.com/Geono/swing-bpm"
+Issues = "https://github.com/Geono/swing-bpm/issues"
