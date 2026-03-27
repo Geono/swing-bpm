@@ -3,6 +3,8 @@
 import librosa
 import numpy as np
 
+HOP_LENGTH = 512
+
 
 def detect_bpm(file_path: str) -> int:
     """Detect BPM of an audio file.
@@ -11,6 +13,7 @@ def detect_bpm(file_path: str) -> int:
     1. librosa beat_track for base tempo detection
     2. Inter-beat onset ratio to detect half-tempo misdetection
     3. PLP (Predominant Local Pulse) as tiebreaker for borderline cases
+    4. PLP stability (std) to reject false doubling on slow ballads
 
     Args:
         file_path: Path to an audio file (MP3, FLAC, WAV, etc.)
@@ -29,8 +32,22 @@ def detect_bpm(file_path: str) -> int:
 
     ratio = _inter_beat_onset_ratio(onset_env, beats)
 
+    plp_cache = {}
+
+    def get_plp_data():
+        if "data" not in plp_cache:
+            pulse = librosa.beat.plp(onset_envelope=onset_env, sr=sr)
+            peaks = np.where(librosa.util.localmax(pulse))[0]
+            if len(peaks) < 2:
+                plp_cache["data"] = (0.0, 0.0)
+            else:
+                intervals = np.diff(peaks)
+                local_bpms = 60.0 * sr / (intervals.astype(float) * HOP_LENGTH)
+                plp_cache["data"] = (float(np.median(local_bpms)), float(np.std(local_bpms)))
+        return plp_cache["data"]
+
     if 0.27 <= ratio <= 0.33:
-        plp_bpm = _plp_bpm(onset_env, sr)
+        plp_bpm, _ = get_plp_data()
         if plp_bpm > 0 and abs(plp_bpm / base_bpm - 2.0) < 0.3:
             return round(base_bpm * 2)
         elif plp_bpm > 0 and abs(plp_bpm / base_bpm - 1.0) < 0.3:
@@ -39,6 +56,14 @@ def detect_bpm(file_path: str) -> int:
             return round(base_bpm * 2) if ratio > 0.30 else round(base_bpm)
 
     if ratio > 0.30:
+        if base_bpm < 105:
+            plp_bpm, plp_std = get_plp_data()
+            if plp_std > 40:
+                return round(base_bpm)
+            elif plp_bpm > 0 and abs(plp_bpm / (base_bpm * 2) - 1.0) < 0.3:
+                return round(base_bpm * 2)
+            else:
+                return round(base_bpm)
         return round(base_bpm * 2)
 
     return round(base_bpm)
@@ -57,14 +82,3 @@ def _inter_beat_onset_ratio(onset_env: np.ndarray, beats: np.ndarray) -> float:
     if not on_beat_strengths:
         return 0.0
     return float(np.mean(mid_strengths) / np.mean(on_beat_strengths))
-
-
-def _plp_bpm(onset_env: np.ndarray, sr: int) -> float:
-    """Calculate BPM using Predominant Local Pulse."""
-    pulse = librosa.beat.plp(onset_envelope=onset_env, sr=sr)
-    peaks = np.where(librosa.util.localmax(pulse))[0]
-    if len(peaks) < 2:
-        return 0.0
-    intervals = np.diff(peaks)
-    hop = 512
-    return 60.0 * sr / (float(np.median(intervals)) * hop)

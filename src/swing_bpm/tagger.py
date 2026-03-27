@@ -10,7 +10,7 @@ from mutagen.wave import WAVE
 
 
 SUPPORTED_EXTENSIONS = {".mp3", ".flac", ".wav"}
-BPM_TAG_PATTERN = re.compile(r"^\[\d+[^\]]*\]\s*")
+BPM_TAG_PATTERN = re.compile(r"^\[\d+(?:~\d+)?\]\s*")
 
 
 def write_bpm_metadata(file_path: str, bpm: int) -> None:
@@ -42,14 +42,10 @@ def write_bpm_metadata(file_path: str, bpm: int) -> None:
 
 
 def rename_with_bpm(file_path: str, bpm: int) -> str:
-    """Rename file to include [BPM] prefix. Returns new path.
-
-    If the file already has a [BPM] tag, it is replaced.
-    """
+    """Rename file to include ``[bpm]`` prefix. Returns new path."""
     directory = os.path.dirname(file_path)
     filename = os.path.basename(file_path)
 
-    # Remove existing BPM tag if present
     clean_name = BPM_TAG_PATTERN.sub("", filename)
     new_name = f"[{bpm}] {clean_name}"
     new_path = os.path.join(directory, new_name)
