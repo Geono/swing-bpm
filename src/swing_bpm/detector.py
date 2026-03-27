@@ -58,12 +58,11 @@ def detect_bpm(file_path: str) -> int:
     if ratio > 0.30:
         if base_bpm < 105:
             plp_bpm, plp_std = get_plp_data()
+            if plp_bpm > 0 and abs(plp_bpm / (base_bpm * 2) - 1.0) < 0.3 and plp_std <= 55:
+                return round(base_bpm * 2)
             if plp_std > 40:
                 return round(base_bpm)
-            elif plp_bpm > 0 and abs(plp_bpm / (base_bpm * 2) - 1.0) < 0.3:
-                return round(base_bpm * 2)
-            else:
-                return round(base_bpm)
+            return round(base_bpm)
         return round(base_bpm * 2)
 
     return round(base_bpm)

@@ -120,7 +120,7 @@ For borderline cases, we use **PLP (Predominant Local Pulse)** — an algorithm 
 
 **Stage 4: PLP stability guard** *(new in v0.2.0)*
 
-When the base tempo is slow (< 105 BPM), the onset ratio can be misleadingly high — walking bass, piano comping, and vocal phrasing fill the space between beats with continuous energy, even though no real beats exist at the midpoints. To prevent false doubling, we check the **PLP stability** (standard deviation of local pulse estimates). A high PLP std (> 40) means PLP cannot find a consistent fast pulse, confirming the song is genuinely slow. In that case, we skip the doubling. If PLP std is low and PLP confirms the doubled tempo, we proceed normally.
+When the base tempo is slow (< 105 BPM), the onset ratio can be misleadingly high — walking bass, piano comping, and vocal phrasing fill the space between beats with continuous energy, even though no real beats exist at the midpoints. To prevent false doubling, we check the **PLP stability** (standard deviation of local pulse estimates). If PLP median is close to the doubled tempo and PLP is moderately stable (std ≤ 55), we trust the doubling. Otherwise, a high PLP std (> 40) means PLP cannot find a consistent fast pulse, confirming the song is genuinely slow — and the doubling is rejected.
 
 ## Test results
 
@@ -230,6 +230,28 @@ print(bpm)  # 174
 If this tool saved you time, consider buying me a coffee!
 
 [![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-support-yellow?style=flat&logo=buy-me-a-coffee&logoColor=white)](https://buymeacoffee.com/kunokim)
+
+## Acknowledgments
+
+Special thanks to [sabok](https://www.instagram.com/sabok_swing/) for providing sample music used in testing and development.
+
+## Changelog
+
+### v0.2.1
+
+- **Fix: false half-tempo on mid-tempo songs with slow base detection** — When `beat_track` returned half-tempo (e.g., 74 instead of 148), Stage 4's PLP stability guard (std > 40) could block the correct doubling even when PLP median clearly confirmed the doubled tempo. Now, if PLP median is close to 2× base and PLP is moderately stable (std ≤ 55), doubling is applied before the stability guard. This fixes songs like "Mack the Knife" (74 → 148) without affecting genuinely slow songs.
+- **Validated against 549 human-labeled tracks** — 0 regressions vs v0.2.0.
+
+### v0.2.0
+
+- **Fix: false double-tempo on slow ballads** — Songs under ~105 BPM (e.g., a 90 BPM ballad) could be incorrectly detected as double tempo (180 BPM) because walking bass and sustained harmonics inflated the onset ratio. Added a 4th detection stage that checks PLP stability before doubling: if PLP cannot find a consistent fast pulse (std > 40), the doubling is rejected.
+- **Expanded validation** — Tested against 417 human-labeled tracks (up from 80). Accuracy: 99.3% within ±10 BPM, average error 3.2 BPM.
+- **Internal: cached PLP computation** — PLP is now computed once and reused across detection stages, avoiding redundant FFT work.
+
+### v0.1.0
+
+- Initial release with 3-stage hybrid detection (beat_track + onset ratio + PLP tiebreaker).
+- 100% accuracy on 80-song test set (80–304 BPM, all within ±10 BPM).
 
 ## License
 
@@ -355,7 +377,7 @@ swing-bpm track1.mp3 track2.flac   # 특정 파일만 처리
 
 **4단계: PLP 안정성 검증** *(v0.2.0에서 추가)*
 
-기본 템포가 느린 경우(< 105 BPM), 워킹 베이스, 피아노 컴핑, 보컬 프레이징이 비트 사이를 채우면서 onset 비율이 실제보다 높게 나올 수 있습니다. 이로 인해 90 BPM 발라드가 180 BPM으로 잘못 2배 처리될 수 있습니다. 이를 방지하기 위해 **PLP 안정성**(로컬 펄스 추정값의 표준편차)을 확인합니다. PLP std가 높으면(> 40) PLP가 일관된 빠른 펄스를 찾지 못한다는 뜻이므로, 곡이 실제로 느린 것으로 판단하고 2배 처리를 건너뜁니다. PLP std가 낮고 PLP가 2배 템포를 확인하면 정상적으로 2배 처리합니다.
+기본 템포가 느린 경우(< 105 BPM), 워킹 베이스, 피아노 컴핑, 보컬 프레이징이 비트 사이를 채우면서 onset 비율이 실제보다 높게 나올 수 있습니다. 이로 인해 90 BPM 발라드가 180 BPM으로 잘못 2배 처리될 수 있습니다. 이를 방지하기 위해 **PLP 안정성**(로컬 펄스 추정값의 표준편차)을 확인합니다. PLP 중앙값이 2배 템포에 가깝고 적당히 안정적이면(std ≤ 55) 2배 처리를 진행합니다. 그 외에는 PLP std가 높으면(> 40) PLP가 일관된 빠른 펄스를 찾지 못한다는 뜻이므로, 곡이 실제로 느린 것으로 판단하고 2배 처리를 건너뜁니다.
 
 ## 테스트 결과
 
@@ -466,15 +488,24 @@ print(bpm)  # 174
 
 [![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-후원하기-yellow?style=flat&logo=buy-me-a-coffee&logoColor=white)](https://buymeacoffee.com/kunokim)
 
+## 감사
+
+테스트 및 개발에 사용된 샘플 음악을 제공해주신 [sabok](https://www.instagram.com/sabok_swing/) 님께 감사드립니다.
+
 ## Changelog
+
+### v0.2.1
+
+- **수정: 중간 템포 곡의 반템포 오탐 해결** — `beat_track`이 반템포를 반환할 때(예: 148 대신 74), 4단계 PLP 안정성 검증(std > 40)이 PLP 중앙값이 2배 템포를 명확히 확인해주는 경우에도 2배 처리를 차단하는 문제 수정. 이제 PLP 중앙값이 2배에 가깝고 적당히 안정적이면(std ≤ 55) 안정성 검증보다 먼저 2배 처리를 적용. "Mack the Knife" (74 → 148) 등 수정, 느린 곡에는 영향 없음.
+- **549곡 검증** — v0.2.0 대비 regression 0건.
 
 ### v0.2.0
 
-- **Fix: false double-tempo on slow ballads** — Songs under ~105 BPM (e.g., a 90 BPM ballad) could be incorrectly detected as double tempo (180 BPM) because walking bass and sustained harmonics inflated the onset ratio. Added a 4th detection stage that checks PLP stability before doubling: if PLP cannot find a consistent fast pulse (std > 40), the doubling is rejected.
-- **Expanded validation** — Tested against 417 human-labeled tracks (up from 80). Accuracy: 99.3% within ±10 BPM, average error 3.2 BPM.
-- **Internal: cached PLP computation** — PLP is now computed once and reused across detection stages, avoiding redundant FFT work.
+- **수정: 느린 발라드의 2배 템포 오탐 해결** — 105 BPM 미만 곡(예: 90 BPM 발라드)이 워킹 베이스와 지속 하모닉스로 인해 onset 비율이 높아져 2배 템포(180 BPM)로 잘못 측정되는 문제 수정. PLP 안정성을 확인하는 4단계 검증 추가: PLP가 일관된 빠른 펄스를 찾지 못하면(std > 40) 2배 처리를 거부.
+- **검증 확대** — 417곡(기존 80곡)으로 검증. 정확도: ±10 BPM 이내 99.3%, 평균 오차 3.2 BPM.
+- **내부: PLP 계산 캐시** — PLP를 한 번만 계산하고 재사용하여 불필요한 FFT 연산 제거.
 
 ### v0.1.0
 
-- Initial release with 3-stage hybrid detection (beat_track + onset ratio + PLP tiebreaker).
-- 100% accuracy on 80-song test set (80–304 BPM, all within ±10 BPM).
+- 3단계 하이브리드 검출(beat_track + onset 비율 + PLP 판정)로 최초 출시.
+- 80곡 테스트 세트(80~304 BPM)에서 100% 정확도(모두 ±10 BPM 이내).
