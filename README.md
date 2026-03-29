@@ -82,9 +82,12 @@ This will:
 swing-bpm ./music/ --dry-run       # Preview without changes
 swing-bpm ./music/ --no-rename     # Metadata only, don't rename
 swing-bpm ./music/ --no-metadata   # Rename only, don't write metadata
+swing-bpm ./music/ --tag-title     # Prepend [BPM] to title metadata
 swing-bpm ./music/ --overwrite     # Re-detect already tagged files
 swing-bpm track1.mp3 track2.flac   # Process specific files
 ```
+
+The `--tag-title` option prepends `[BPM]` to the title metadata tag (e.g., ID3 TIT2). This is useful for DJ software like Mixxx that displays the title from metadata — you can see the BPM directly in the title column. If a file has no title metadata, the filename is used as a fallback.
 
 ### Supported formats
 
@@ -237,6 +240,10 @@ Special thanks to [sabok](https://www.instagram.com/sabok_swing/) for providing 
 
 ## Changelog
 
+### v0.3.0
+
+- **New: `--tag-title` option** — Prepends `[BPM]` to the title metadata tag (ID3 TIT2 for MP3/WAV, Vorbis comment for FLAC). Useful for DJ software that doesn't reliably read BPM metadata. Falls back to filename when the title tag is empty.
+
 ### v0.2.1
 
 - **Fix: false half-tempo on mid-tempo songs with slow base detection** — When `beat_track` returned half-tempo (e.g., 74 instead of 148), Stage 4's PLP stability guard (std > 40) could block the correct doubling even when PLP median clearly confirmed the doubled tempo. Now, if PLP median is close to 2× base and PLP is moderately stable (std ≤ 55), doubling is applied before the stability guard. This fixes songs like "Mack the Knife" (74 → 148) without affecting genuinely slow songs.
@@ -339,9 +346,12 @@ swing-bpm "C:\Users\사용자이름\Music\swing"
 swing-bpm ./music/ --dry-run       # 변경 없이 미리보기만
 swing-bpm ./music/ --no-rename     # 메타데이터만 기록 (파일명 변경 안 함)
 swing-bpm ./music/ --no-metadata   # 파일명만 변경 (메타데이터 기록 안 함)
+swing-bpm ./music/ --tag-title     # 제목 메타데이터 앞에 [BPM] 붙이기
 swing-bpm ./music/ --overwrite     # 이미 태그된 파일도 다시 측정
 swing-bpm track1.mp3 track2.flac   # 특정 파일만 처리
 ```
+
+`--tag-title` 옵션은 제목 메타데이터(ID3 TIT2 등) 앞에 `[BPM]`을 붙입니다. Mixxx 같은 DJ 소프트웨어에서 메타데이터의 BPM 태그를 제대로 읽지 못할 때 유용합니다 — 제목 컬럼에서 BPM을 바로 확인할 수 있습니다. 제목 메타데이터가 비어있는 파일은 파일명을 대신 사용합니다.
 
 ### 지원 포맷
 
@@ -493,6 +503,10 @@ print(bpm)  # 174
 테스트 및 개발에 사용된 샘플 음악을 제공해주신 [sabok](https://www.instagram.com/sabok_swing/) 님께 감사드립니다.
 
 ## Changelog
+
+### v0.3.0
+
+- **신규: `--tag-title` 옵션** — 제목 메타데이터(MP3/WAV: ID3 TIT2, FLAC: Vorbis comment) 앞에 `[BPM]`을 붙입니다. BPM 메타데이터를 제대로 읽지 못하는 DJ 소프트웨어에서 유용합니다. 제목 태그가 비어있으면 파일명을 대신 사용합니다.
 
 ### v0.2.1
 

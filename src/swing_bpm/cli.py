@@ -11,6 +11,7 @@ from swing_bpm.tagger import (
     is_supported,
     rename_with_bpm,
     write_bpm_metadata,
+    write_bpm_to_title,
 )
 
 
@@ -38,6 +39,11 @@ def main():
         "--overwrite",
         action="store_true",
         help="Re-detect and overwrite existing BPM tags.",
+    )
+    parser.add_argument(
+        "--tag-title",
+        action="store_true",
+        help="Prepend [BPM] to the title metadata tag.",
     )
     parser.add_argument(
         "--dry-run",
@@ -84,6 +90,8 @@ def main():
                 print(f"         Would rename to: [{bpm}] {clean}")
             if not args.no_metadata:
                 print(f"         Would write BPM metadata: {bpm}")
+            if args.tag_title:
+                print(f"         Would tag title with: [{bpm}]")
             continue
 
         if not args.no_metadata:
@@ -91,6 +99,12 @@ def main():
                 write_bpm_metadata(file_path, bpm)
             except Exception as e:
                 print(f"         Metadata write failed: {e}")
+
+        if args.tag_title:
+            try:
+                write_bpm_to_title(file_path, bpm)
+            except Exception as e:
+                print(f"         Title tag failed: {e}")
 
         if not args.no_rename:
             try:

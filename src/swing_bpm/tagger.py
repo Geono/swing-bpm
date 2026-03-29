@@ -4,7 +4,7 @@ import os
 import re
 
 from mutagen.flac import FLAC
-from mutagen.id3 import TBPM
+from mutagen.id3 import TIT2, TBPM
 from mutagen.mp3 import MP3
 from mutagen.wave import WAVE
 
@@ -38,6 +38,49 @@ def write_bpm_metadata(file_path: str, bpm: int) -> None:
         if audio.tags is None:
             audio.add_tags()
         audio.tags.add(TBPM(encoding=3, text=[str(bpm)]))
+        audio.save()
+
+
+def _title_from_filename(file_path: str) -> str:
+    """Extract a title from the filename (without extension and BPM prefix)."""
+    name = os.path.splitext(os.path.basename(file_path))[0]
+    return BPM_TAG_PATTERN.sub("", name)
+
+
+def write_bpm_to_title(file_path: str, bpm: int) -> None:
+    """Prepend [BPM] to the title metadata tag. Falls back to filename if title is empty."""
+    ext = os.path.splitext(file_path)[1].lower()
+    fallback = _title_from_filename(file_path)
+
+    if ext == ".mp3":
+        audio = MP3(file_path)
+        if audio.tags is None:
+            audio.add_tags()
+        title = str(audio.tags.get("TIT2", ""))
+        clean_title = BPM_TAG_PATTERN.sub("", title).strip()
+        if not clean_title:
+            clean_title = fallback
+        audio.tags.add(TIT2(encoding=3, text=[f"[{bpm}] {clean_title}"]))
+        audio.save()
+
+    elif ext == ".flac":
+        audio = FLAC(file_path)
+        title = audio.get("title", [""])[0]
+        clean_title = BPM_TAG_PATTERN.sub("", title).strip()
+        if not clean_title:
+            clean_title = fallback
+        audio["title"] = [f"[{bpm}] {clean_title}"]
+        audio.save()
+
+    elif ext == ".wav":
+        audio = WAVE(file_path)
+        if audio.tags is None:
+            audio.add_tags()
+        title = str(audio.tags.get("TIT2", ""))
+        clean_title = BPM_TAG_PATTERN.sub("", title).strip()
+        if not clean_title:
+            clean_title = fallback
+        audio.tags.add(TIT2(encoding=3, text=[f"[{bpm}] {clean_title}"]))
         audio.save()
 
 
