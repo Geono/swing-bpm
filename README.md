@@ -12,6 +12,19 @@ Standard BPM detectors often misidentify fast swing tempos (180+ BPM) as half-te
 
 ## Install
 
+```bash
+pip install swing-bpm
+```
+
+To update:
+
+```bash
+pip install --upgrade swing-bpm
+```
+
+<details>
+<summary><strong>Install from source (alternative)</strong></summary>
+
 ### macOS
 
 1. Install Python 3.9+ (if not already installed):
@@ -41,9 +54,7 @@ Standard BPM detectors often misidentify fast swing tempos (180+ BPM) as half-te
 
    If you don't have Git, you can [download the ZIP](https://github.com/Geono/swing-bpm/archive/refs/heads/main.zip) instead, extract it, and run `pip install .` inside the folder.
 
-### Update
-
-To update to the latest version:
+### Update from source
 
 ```bash
 cd swing-bpm
@@ -58,6 +69,8 @@ cd swing-bpm
 git pull
 pipx install --force .
 ```
+
+</details>
 
 ## Usage
 
@@ -280,6 +293,19 @@ MIT
 
 ## 설치
 
+```bash
+pip install swing-bpm
+```
+
+업데이트:
+
+```bash
+pip install --upgrade swing-bpm
+```
+
+<details>
+<summary><strong>소스에서 설치 (대안)</strong></summary>
+
 ### macOS
 
 1. Python 3.9 이상 설치 (이미 있다면 생략):
@@ -309,9 +335,7 @@ MIT
 
    Git이 없다면 [ZIP 파일을 다운로드](https://github.com/Geono/swing-bpm/archive/refs/heads/main.zip)한 뒤 압축을 풀고, 해당 폴더에서 `pip install .`을 실행하면 됩니다.
 
-### 업데이트
-
-최신 버전으로 업데이트하려면:
+### 소스에서 업데이트
 
 ```bash
 cd swing-bpm
@@ -326,6 +350,8 @@ cd swing-bpm
 git pull
 pipx install --force .
 ```
+
+</details>
 
 ## 사용법
 
