@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "swing-bpm"
-version = "0.3.0"
+version = "0.4.0"
 description = "Automatic BPM detection optimized for swing & jazz music"
 readme = "README.md"
 license = "MIT"

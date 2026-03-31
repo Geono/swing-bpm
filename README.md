@@ -71,7 +71,7 @@ swing-bpm ~/Music/swing/
 swing-bpm "C:\Users\YourName\Music\swing"
 ```
 
-This will:
+This will recursively scan all subdirectories and for each file:
 1. Detect BPM for each file
 2. Rename files with a `[BPM]` prefix (e.g., `[174] Tea For Two.mp3`)
 3. Write BPM to audio metadata (ID3 TBPM for MP3/WAV, Vorbis comment for FLAC)
@@ -240,6 +240,10 @@ Special thanks to [sabok](https://www.instagram.com/sabok_swing/) for providing 
 
 ## Changelog
 
+### v0.4.0
+
+- **Recursive directory scanning by default** — When a directory is given, all subdirectories are now scanned automatically. No extra flags needed.
+
 ### v0.3.0
 
 - **New: `--tag-title` option** — Prepends `[BPM]` to the title metadata tag (ID3 TIT2 for MP3/WAV, Vorbis comment for FLAC). Useful for DJ software that doesn't reliably read BPM metadata. Falls back to filename when the title tag is empty.
@@ -335,7 +339,7 @@ swing-bpm ~/Music/swing/
 swing-bpm "C:\Users\사용자이름\Music\swing"
 ```
 
-실행하면 각 파일에 대해:
+하위 폴더까지 자동으로 탐색하며, 각 파일에 대해:
 1. BPM을 자동 측정합니다
 2. 파일명 앞에 `[BPM]`을 붙입니다 (예: `[174] Tea For Two.mp3`)
 3. 오디오 메타데이터에 BPM을 기록합니다 (MP3/WAV: ID3 TBPM, FLAC: Vorbis comment)
@@ -503,6 +507,10 @@ print(bpm)  # 174
 테스트 및 개발에 사용된 샘플 음악을 제공해주신 [sabok](https://www.instagram.com/sabok_swing/) 님께 감사드립니다.
 
 ## Changelog
+
+### v0.4.0
+
+- **하위 폴더 자동 탐색** — 디렉토리를 지정하면 하위 폴더의 모든 음악 파일도 자동으로 처리합니다. 별도 옵션이 필요 없습니다.
 
 ### v0.3.0
 

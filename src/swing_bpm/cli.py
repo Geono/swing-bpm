@@ -118,15 +118,16 @@ def main():
 
 
 def _collect_files(paths: list[str]) -> list[str]:
-    """Collect all supported audio files from given paths."""
+    """Collect all supported audio files from given paths (recursive)."""
     files = []
     for path in paths:
         path = os.path.expanduser(path)
         if os.path.isfile(path) and is_supported(path):
             files.append(os.path.abspath(path))
         elif os.path.isdir(path):
-            for entry in sorted(os.listdir(path)):
-                full = os.path.join(path, entry)
-                if os.path.isfile(full) and is_supported(full):
-                    files.append(os.path.abspath(full))
+            for dirpath, _, filenames in os.walk(path):
+                for entry in sorted(filenames):
+                    full = os.path.join(dirpath, entry)
+                    if is_supported(full):
+                        files.append(os.path.abspath(full))
     return files
