@@ -58,6 +58,8 @@ def main():
 
     args = parser.parse_args()
 
+    print("swing-bpm — by Kuno Kim (https://instagram.com/kuno.headswing)\n")
+
     files = _collect_files(args.path)
     if not files:
         print("No supported audio files found.", file=sys.stderr)
