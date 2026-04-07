@@ -26,6 +26,10 @@ search:
 
 footer_content: "swing-bpm is released under the <a href=\"https://github.com/Geono/swing-bpm/blob/main/LICENSE\">MIT License</a>."
 
+plugins:
+  - jekyll-sitemap
+  - jekyll-remote-theme
+
 back_to_top: true
 back_to_top_text: "Back to top"
 
