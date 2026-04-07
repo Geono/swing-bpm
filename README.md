@@ -1,10 +1,12 @@
 # swing-bpm
 
+[![PyPI](https://img.shields.io/pypi/v/swing-bpm?color=blue)](https://pypi.org/project/swing-bpm/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://github.com/Geono/swing-bpm/blob/main/LICENSE)
 [![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-support-yellow?style=flat&logo=buy-me-a-coffee)](https://buymeacoffee.com/kunokim)
 
 한글 설명은 맨 아래에 있습니다.
 
-Automatic BPM detection optimized for **swing & jazz music**.
+A command-line BPM detector for **swing dance DJs** — accurately tags tempo in jazz, swing, and lindy hop music files (MP3, FLAC, WAV). Works where other BPM tools fail.
 
 Standard BPM detectors often misidentify fast swing tempos (180+ BPM) as half-tempo. `swing-bpm` solves this with a hybrid detection algorithm that combines onset analysis with Predominant Local Pulse (PLP), achieving **100% accuracy** on an 80-song test set spanning 80–304 BPM.
 
@@ -285,7 +287,7 @@ MIT
 
 # swing-bpm (한국어)
 
-스윙 & 재즈 음악에 최적화된 **자동 BPM 측정 도구**입니다.
+스윙 댄스 DJ를 위한 **자동 BPM 측정 도구** — 재즈, 스윙, 린디합 음악 파일(MP3, FLAC, WAV)의 BPM을 정확하게 측정하고 태깅합니다. 다른 BPM 측정기가 실패하는 빠른 스윙 곡도 정확하게 잡아냅니다.
 
 일반적인 BPM 측정기는 빠른 스윙 템포(180+ BPM)를 절반 속도로 잘못 인식하는 경우가 많습니다. `swing-bpm`은 onset 분석과 PLP(Predominant Local Pulse)를 결합한 하이브리드 알고리즘으로 이 문제를 해결하며, 80~304 BPM 범위의 80곡 테스트에서 **100% 정확도**를 달성했습니다.
 

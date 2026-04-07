@@ -30,6 +30,7 @@ dependencies = [
 swing-bpm = "swing_bpm.cli:main"
 
 [project.urls]
-Homepage = "https://github.com/Geono/swing-bpm"
+Homepage = "https://geono.github.io/swing-bpm/"
+Documentation = "https://geono.github.io/swing-bpm/"
 Repository = "https://github.com/Geono/swing-bpm"
 Issues = "https://github.com/Geono/swing-bpm/issues"
