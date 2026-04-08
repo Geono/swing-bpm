@@ -94,21 +94,22 @@ Tag all music files in a folder:
 
 ```bash
 # macOS
-swing-bpm ~/Music/swing/
+swing-bpm --rename ~/Music/swing/
 
 # Windows
-swing-bpm "C:\Users\YourName\Music\swing"
+swing-bpm --rename "C:\Users\YourName\Music\swing"
 ```
 
 This will recursively scan all subdirectories and for each file:
 1. Detect BPM for each file
-2. Write BPM to audio metadata (ID3 TBPM for MP3/WAV, Vorbis comment for FLAC)
+2. Rename files with a `[BPM]` prefix (e.g., `[174] Tea For Two.mp3`)
+3. Write BPM to audio metadata (ID3 TBPM for MP3/WAV, Vorbis comment for FLAC)
 
 ### Options
 
 ```bash
 swing-bpm ./music/ --dry-run       # Preview without changes
-swing-bpm ./music/ --rename        # Also rename files with [BPM] prefix
+swing-bpm ./music/                 # Metadata only (no rename)
 swing-bpm ./music/ --no-metadata   # Skip writing metadata (use with --rename)
 swing-bpm ./music/ --tag-title     # Prepend [BPM] to title metadata
 swing-bpm ./music/ --overwrite     # Re-detect already tagged files

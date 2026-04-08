@@ -80,21 +80,22 @@ Tag all music files in a folder:
 
 ```bash
 # macOS
-swing-bpm ~/Music/swing/
+swing-bpm --rename ~/Music/swing/
 
 # Windows
-swing-bpm "C:\Users\YourName\Music\swing"
+swing-bpm --rename "C:\Users\YourName\Music\swing"
 ```
 
 This will recursively scan all subdirectories and for each file:
 1. Detect BPM for each file
-2. Write BPM to audio metadata (ID3 TBPM for MP3/WAV, Vorbis comment for FLAC)
+2. Rename files with a `[BPM]` prefix (e.g., `[174] Tea For Two.mp3`)
+3. Write BPM to audio metadata (ID3 TBPM for MP3/WAV, Vorbis comment for FLAC)
 
 ### Options
 
 ```bash
 swing-bpm ./music/ --dry-run       # Preview without changes
-swing-bpm ./music/ --rename        # Also rename files with [BPM] prefix
+swing-bpm ./music/                 # Metadata only (no rename)
 swing-bpm ./music/ --no-metadata   # Skip writing metadata (use with --rename)
 swing-bpm ./music/ --tag-title     # Prepend [BPM] to title metadata
 swing-bpm ./music/ --overwrite     # Re-detect already tagged files
@@ -374,21 +375,22 @@ pipx install --force .
 
 ```bash
 # macOS
-swing-bpm ~/Music/swing/
+swing-bpm --rename ~/Music/swing/
 
 # Windows
-swing-bpm "C:\Users\사용자이름\Music\swing"
+swing-bpm --rename "C:\Users\사용자이름\Music\swing"
 ```
 
 하위 폴더까지 자동으로 탐색하며, 각 파일에 대해:
 1. BPM을 자동 측정합니다
-2. 오디오 메타데이터에 BPM을 기록합니다 (MP3/WAV: ID3 TBPM, FLAC: Vorbis comment)
+2. 파일명 앞에 `[BPM]`을 붙입니다 (예: `[174] Tea For Two.mp3`)
+3. 오디오 메타데이터에 BPM을 기록합니다 (MP3/WAV: ID3 TBPM, FLAC: Vorbis comment)
 
 ### 옵션
 
 ```bash
 swing-bpm ./music/ --dry-run       # 변경 없이 미리보기만
-swing-bpm ./music/ --rename        # 파일명 앞에 [BPM] 붙이기
+swing-bpm ./music/                 # 메타데이터만 기록 (파일명 변경 안 함)
 swing-bpm ./music/ --no-metadata   # 메타데이터 기록 건너뜀 (--rename과 함께 사용)
 swing-bpm ./music/ --tag-title     # 제목 메타데이터 앞에 [BPM] 붙이기
 swing-bpm ./music/ --overwrite     # 이미 태그된 파일도 다시 측정
