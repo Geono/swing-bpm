@@ -5,12 +5,15 @@ import os
 import sys
 
 from swing_bpm import __version__
-from swing_bpm.detector import detect_bpm
+from swing_bpm.detector import detect_bpm, detect_bpm_range
 from swing_bpm.tagger import (
     has_bpm_tag,
     is_supported,
     rename_with_bpm,
+    rename_with_bpm_range,
     write_bpm_metadata,
+    write_bpm_range_metadata,
+    write_bpm_range_to_title,
     write_bpm_to_title,
 )
 
@@ -26,14 +29,14 @@ def main():
         help="Audio files or directories to process.",
     )
     parser.add_argument(
-        "--no-rename",
+        "--rename",
         action="store_true",
-        help="Skip renaming files (only write metadata).",
+        help="Also rename files with [BPM] prefix (default: metadata only).",
     )
     parser.add_argument(
         "--no-metadata",
         action="store_true",
-        help="Skip writing metadata (only rename files).",
+        help="Skip writing metadata (use with --rename for rename only).",
     )
     parser.add_argument(
         "--overwrite",
@@ -44,6 +47,11 @@ def main():
         "--tag-title",
         action="store_true",
         help="Prepend [BPM] to the title metadata tag.",
+    )
+    parser.add_argument(
+        "--range",
+        action="store_true",
+        help="Detect BPM range (min~max) for songs with varying tempo.",
     )
     parser.add_argument(
         "--dry-run",
@@ -75,44 +83,89 @@ def main():
 
         print(f"[{i}/{total}] Analyzing: {filename}", end="", flush=True)
 
-        try:
-            bpm = detect_bpm(file_path)
-        except Exception as e:
-            print(f" -> Error: {e}")
-            continue
+        if args.range:
+            try:
+                min_bpm, max_bpm, median_bpm = detect_bpm_range(file_path)
+            except Exception as e:
+                print(f" -> Error: {e}")
+                continue
 
-        print(f" -> {bpm} BPM")
+            if min_bpm == max_bpm:
+                print(f" -> {min_bpm} BPM (constant)")
+            else:
+                print(f" -> {min_bpm}~{max_bpm} BPM (median {median_bpm})")
 
-        if args.dry_run:
-            if not args.no_rename:
-                from swing_bpm.tagger import BPM_TAG_PATTERN
-                clean = BPM_TAG_PATTERN.sub("", filename)
-                print(f"         Would rename to: [{bpm}] {clean}")
+            bpm_tag = f"{min_bpm}~{max_bpm}" if min_bpm != max_bpm else str(min_bpm)
+
+            if args.dry_run:
+                if args.rename:
+                    from swing_bpm.tagger import BPM_TAG_PATTERN
+                    clean = BPM_TAG_PATTERN.sub("", filename)
+                    print(f"         Would rename to: [{bpm_tag}] {clean}")
+                if not args.no_metadata:
+                    print(f"         Would write BPM metadata: {median_bpm} (range: {bpm_tag})")
+                if args.tag_title:
+                    print(f"         Would tag title with: [{bpm_tag}]")
+                continue
+
             if not args.no_metadata:
-                print(f"         Would write BPM metadata: {bpm}")
+                try:
+                    write_bpm_range_metadata(file_path, min_bpm, max_bpm, median_bpm)
+                except Exception as e:
+                    print(f"         Metadata write failed: {e}")
+
             if args.tag_title:
-                print(f"         Would tag title with: [{bpm}]")
-            continue
+                try:
+                    write_bpm_range_to_title(file_path, min_bpm, max_bpm)
+                except Exception as e:
+                    print(f"         Title tag failed: {e}")
 
-        if not args.no_metadata:
+            if args.rename:
+                try:
+                    new_path = rename_with_bpm_range(file_path, min_bpm, max_bpm)
+                    if new_path != file_path:
+                        file_path = new_path
+                except Exception as e:
+                    print(f"         Rename failed: {e}")
+        else:
             try:
-                write_bpm_metadata(file_path, bpm)
+                bpm = detect_bpm(file_path)
             except Exception as e:
-                print(f"         Metadata write failed: {e}")
+                print(f" -> Error: {e}")
+                continue
 
-        if args.tag_title:
-            try:
-                write_bpm_to_title(file_path, bpm)
-            except Exception as e:
-                print(f"         Title tag failed: {e}")
+            print(f" -> {bpm} BPM")
 
-        if not args.no_rename:
-            try:
-                new_path = rename_with_bpm(file_path, bpm)
-                if new_path != file_path:
-                    file_path = new_path
-            except Exception as e:
-                print(f"         Rename failed: {e}")
+            if args.dry_run:
+                if args.rename:
+                    from swing_bpm.tagger import BPM_TAG_PATTERN
+                    clean = BPM_TAG_PATTERN.sub("", filename)
+                    print(f"         Would rename to: [{bpm}] {clean}")
+                if not args.no_metadata:
+                    print(f"         Would write BPM metadata: {bpm}")
+                if args.tag_title:
+                    print(f"         Would tag title with: [{bpm}]")
+                continue
+
+            if not args.no_metadata:
+                try:
+                    write_bpm_metadata(file_path, bpm)
+                except Exception as e:
+                    print(f"         Metadata write failed: {e}")
+
+            if args.tag_title:
+                try:
+                    write_bpm_to_title(file_path, bpm)
+                except Exception as e:
+                    print(f"         Title tag failed: {e}")
+
+            if args.rename:
+                try:
+                    new_path = rename_with_bpm(file_path, bpm)
+                    if new_path != file_path:
+                        file_path = new_path
+                except Exception as e:
+                    print(f"         Rename failed: {e}")
 
     print("\nDone!")
 

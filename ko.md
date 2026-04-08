@@ -101,21 +101,25 @@ swing-bpm "C:\Users\사용자이름\Music\swing"
 
 하위 폴더까지 자동으로 탐색하며, 각 파일에 대해:
 1. BPM을 자동 측정합니다
-2. 파일명 앞에 `[BPM]`을 붙입니다 (예: `[174] Tea For Two.mp3`)
-3. 오디오 메타데이터에 BPM을 기록합니다 (MP3/WAV: ID3 TBPM, FLAC: Vorbis comment)
+2. 오디오 메타데이터에 BPM을 기록합니다 (MP3/WAV: ID3 TBPM, FLAC: Vorbis comment)
 
 ### 옵션
 
 ```bash
 swing-bpm ./music/ --dry-run       # 변경 없이 미리보기만
-swing-bpm ./music/ --no-rename     # 메타데이터만 기록 (파일명 변경 안 함)
-swing-bpm ./music/ --no-metadata   # 파일명만 변경 (메타데이터 기록 안 함)
+swing-bpm ./music/ --rename        # 파일명 앞에 [BPM] 붙이기
+swing-bpm ./music/ --no-metadata   # 메타데이터 기록 건너뜀 (--rename과 함께 사용)
 swing-bpm ./music/ --tag-title     # 제목 메타데이터 앞에 [BPM] 붙이기
 swing-bpm ./music/ --overwrite     # 이미 태그된 파일도 다시 측정
+swing-bpm ./music/ --range         # 템포 변화가 있는 곡의 BPM 범위(min~max) 측정
 swing-bpm track1.mp3 track2.flac   # 특정 파일만 처리
 ```
 
+`--rename` 옵션은 파일명 앞에 `[BPM]` 접두사를 붙입니다 (예: `[174] Tea For Two.mp3`). 기본 동작은 메타데이터만 기록합니다.
+
 `--tag-title` 옵션은 제목 메타데이터(ID3 TIT2 등) 앞에 `[BPM]`을 붙입니다. Mixxx 같은 DJ 소프트웨어에서 메타데이터의 BPM 태그를 제대로 읽지 못할 때 유용합니다 — 제목 컬럼에서 BPM을 바로 확인할 수 있습니다. 제목 메타데이터가 비어있는 파일은 파일명을 대신 사용합니다.
+
+`--range` 옵션은 템포가 변하는 곡의 BPM 범위를 측정합니다 (예: 처음엔 느렸다가 빨라지는 곡). 오디오를 30초 단위의 겹치는 구간으로 나누어 각 구간마다 4단계 감지 알고리즘을 적용하고, min~max 범위를 보고합니다. 파일은 `[120~180]` 형태로 태깅되며, TBPM 메타데이터에는 중앙값이, 코멘트 필드에 전체 범위가 저장됩니다.
 
 ### 지원 포맷
 
@@ -156,10 +160,14 @@ swing-bpm track1.mp3 track2.flac   # 특정 파일만 처리
 ## 라이브러리로 사용
 
 ```python
-from swing_bpm import detect_bpm
+from swing_bpm import detect_bpm, detect_bpm_range
 
 bpm = detect_bpm("Tea For Two.mp3")
 print(bpm)  # 174
+
+# 템포가 변하는 곡
+min_bpm, max_bpm, median_bpm = detect_bpm_range("Darktown Strutters Ball.mp3")
+print(f"{min_bpm}~{max_bpm} (median {median_bpm})")  # 89~157 (median 152)
 ```
 
 ## 테스트 결과

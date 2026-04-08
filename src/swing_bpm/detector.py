@@ -22,6 +22,14 @@ def detect_bpm(file_path: str) -> int:
         Detected BPM as an integer.
     """
     y, sr = librosa.load(file_path)
+    return _detect_bpm_from_signal(y, sr)
+
+
+def _detect_bpm_from_signal(y: np.ndarray, sr: int) -> int:
+    """Run the 4-stage hybrid algorithm on an audio signal array.
+
+    Same logic as detect_bpm but accepts a pre-loaded signal instead of a file path.
+    """
     onset_env = librosa.onset.onset_strength(y=y, sr=sr)
 
     tempo, beats = librosa.beat.beat_track(y=y, sr=sr)
@@ -66,6 +74,54 @@ def detect_bpm(file_path: str) -> int:
         return round(base_bpm * 2)
 
     return round(base_bpm)
+
+
+def detect_bpm_range(
+    file_path: str, window_sec: int = 30, overlap: float = 0.5,
+) -> tuple[int, int, int]:
+    """Detect BPM range for songs with varying tempo.
+
+    Splits the audio into overlapping windows and runs the 4-stage hybrid
+    algorithm on each window, then returns the minimum, maximum, and median BPM.
+
+    Args:
+        file_path: Path to an audio file (MP3, FLAC, WAV, etc.)
+        window_sec: Length of each analysis window in seconds (default 30).
+        overlap: Fraction of overlap between consecutive windows (default 0.5).
+
+    Returns:
+        Tuple of (min_bpm, max_bpm, median_bpm).
+    """
+    y, sr = librosa.load(file_path)
+    total_samples = len(y)
+    window_samples = window_sec * sr
+    step_samples = int(window_samples * (1 - overlap))
+
+    if total_samples <= window_samples:
+        bpm = _detect_bpm_from_signal(y, sr)
+        return (bpm, bpm, bpm)
+
+    bpms = []
+    start = 0
+    while start + window_samples <= total_samples:
+        segment = y[start : start + window_samples]
+        bpms.append(_detect_bpm_from_signal(segment, sr))
+        start += step_samples
+
+    # Include the tail if there's a remaining segment long enough (>= 10 sec)
+    if start < total_samples and (total_samples - start) >= sr * 10:
+        segment = y[start:]
+        bpms.append(_detect_bpm_from_signal(segment, sr))
+
+    if not bpms:
+        bpm = _detect_bpm_from_signal(y, sr)
+        return (bpm, bpm, bpm)
+
+    min_bpm = min(bpms)
+    max_bpm = max(bpms)
+    median_bpm = round(float(np.median(bpms)))
+
+    return (min_bpm, max_bpm, median_bpm)
 
 
 def _inter_beat_onset_ratio(onset_env: np.ndarray, beats: np.ndarray) -> float:

@@ -102,21 +102,25 @@ swing-bpm "C:\Users\YourName\Music\swing"
 
 This will recursively scan all subdirectories and for each file:
 1. Detect BPM for each file
-2. Rename files with a `[BPM]` prefix (e.g., `[174] Tea For Two.mp3`)
-3. Write BPM to audio metadata (ID3 TBPM for MP3/WAV, Vorbis comment for FLAC)
+2. Write BPM to audio metadata (ID3 TBPM for MP3/WAV, Vorbis comment for FLAC)
 
 ### Options
 
 ```bash
 swing-bpm ./music/ --dry-run       # Preview without changes
-swing-bpm ./music/ --no-rename     # Metadata only, don't rename
-swing-bpm ./music/ --no-metadata   # Rename only, don't write metadata
+swing-bpm ./music/ --rename        # Also rename files with [BPM] prefix
+swing-bpm ./music/ --no-metadata   # Skip writing metadata (use with --rename)
 swing-bpm ./music/ --tag-title     # Prepend [BPM] to title metadata
 swing-bpm ./music/ --overwrite     # Re-detect already tagged files
+swing-bpm ./music/ --range         # Detect BPM range (min~max) for varying tempo
 swing-bpm track1.mp3 track2.flac   # Process specific files
 ```
 
+The `--rename` option adds a `[BPM]` prefix to the filename (e.g., `[174] Tea For Two.mp3`). By default, only metadata is written.
+
 The `--tag-title` option prepends `[BPM]` to the title metadata tag (e.g., ID3 TIT2). This is useful for DJ software like Mixxx that displays the title from metadata — you can see the BPM directly in the title column. If a file has no title metadata, the filename is used as a fallback.
+
+The `--range` option detects BPM range for songs with varying tempo (e.g., songs that start slow and speed up). It splits the audio into 30-second overlapping windows, runs the full 4-stage detection on each, and reports the min~max range. Files are tagged as `[120~180]` instead of a single value. The TBPM metadata stores the median BPM, while the full range is saved in a comment field.
 
 ### Supported formats
 
@@ -157,10 +161,14 @@ When the base tempo is slow (< 105 BPM), the onset ratio can be misleadingly hig
 ## As a library
 
 ```python
-from swing_bpm import detect_bpm
+from swing_bpm import detect_bpm, detect_bpm_range
 
 bpm = detect_bpm("Tea For Two.mp3")
 print(bpm)  # 174
+
+# For songs with varying tempo
+min_bpm, max_bpm, median_bpm = detect_bpm_range("Darktown Strutters Ball.mp3")
+print(f"{min_bpm}~{max_bpm} (median {median_bpm})")  # 89~157 (median 152)
 ```
 
 ## Test results
@@ -258,6 +266,11 @@ Additionally validated against 417 human-labeled tracks (80–304 BPM): 99.3% wi
 </details>
 
 ## Changelog
+
+### v0.5.0
+
+- **New: `--range` option** — Detects BPM range (min~max) for songs with varying tempo. Splits audio into 30-second overlapping windows and runs the full 4-stage detection on each segment. Tags files as `[120~180]` with median BPM in metadata.
+- **Changed: metadata-only by default** — File renaming no longer happens by default. Use `--rename` to add `[BPM]` prefix to filenames. This is a breaking change from previous versions where renaming was the default behavior.
 
 ### v0.4.0
 
