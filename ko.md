@@ -18,6 +18,8 @@ permalink: /ko
 [시작하기](#설치){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
 [GitHub](https://github.com/Geono/swing-bpm){: .btn .fs-5 .mb-4 .mb-md-0 }
 [English](/swing-bpm/){: .btn .fs-5 .mb-4 .mb-md-0 }
+[日本語](/swing-bpm/ja){: .btn .fs-5 .mb-4 .mb-md-0 }
+[中文](/swing-bpm/zh){: .btn .fs-5 .mb-4 .mb-md-0 }
 
 ---
 
